@@ -54,7 +54,7 @@ else:
 
 # NPC Car設置
 
-npc = npc_gen(sim,"Sedan",lgsvl.Vector(-38.5,0,-5.2),64)
+npc = npc_gen(sim,"Sedan",lgsvl.Vector(-17,0,5.9),64)
 
 # counter coneの設置
 
@@ -65,13 +65,13 @@ for c in controllables:
     print("state: " + str(c.transform))
 
 state = lgsvl.ObjectState()
-state.transform.position = lgsvl.Vector(-19,0,4)
+state.transform.position = lgsvl.Vector(-3.3,0,12.5)
 ccone.object_state = state
 
 # egovehicle追加
 spawns = sim.get_spawn()
 state = lgsvl.AgentState()
-state.transform.position = lgsvl.Vector(-56,0,-15)
+state.transform.position = lgsvl.Vector(-47,0,-10)
 state.transform.rotation = lgsvl.Vector(0,64,0)
 counter = 0
 ego = sim.add_agent(args.ego, lgsvl.AgentType.EGO,state)
