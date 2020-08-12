@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2019 LG Electronics, Inc.
+# Copyright (c) 2019-2020 LG Electronics, Inc.
 #
 # This software contains code licensed as described in LICENSE.
 #
@@ -216,6 +216,9 @@ class NpcVehicle(Vehicle):
   def follow_closest_lane(self, follow, max_speed, isLaneChange=True):
     self.remote.command("vehicle/follow_closest_lane", {"uid": self.uid, "follow": follow, "max_speed": max_speed, "isLaneChange": isLaneChange})
 
+  def set_behaviour(self, behaviour):
+    self.remote.command("vehicle/behaviour", {"uid": self.uid, "behaviour": behaviour})
+
   @accepts(bool)
   def change_lane(self, isLeftChange):
     self.remote.command("vehicle/change_lane", {"uid": self.uid, "isLeftChange": isLeftChange})
@@ -291,6 +294,10 @@ class Pedestrian(Agent):
       "waypoints": [{"position": wp.position.to_json(), "idle": wp.idle, "trigger_distance": wp.trigger_distance} for wp in waypoints],
       "loop": loop,
     })
+
+  @accepts(float)
+  def set_speed(self, speed):
+    self.remote.command("pedestrian/set_speed", {"uid": self.uid, "speed": speed})
 
   @accepts(Callable)
   def on_waypoint_reached(self, fn):
