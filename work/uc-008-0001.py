@@ -2,9 +2,55 @@
 import os
 import lgsvl
 import argparse
+import math
+import random
 
 EGO_START_POS = lgsvl.Vector(6.5,0,10.0)
 EGO_START_ROT_Y = 154
+
+def npc_random_gen(trailerAvailable):
+    mindist = 10.0
+    maxdist = 40.0
+    while True:
+        angle = random.uniform(0.0, 2*math.pi)
+        dist = random.uniform(mindist, maxdist)
+        spawn = random.choice(spawns)
+        sx = spawn.position.x
+        sy = spawn.position.y
+        sz = spawn.position.z
+        point = lgsvl.Vector(sx + dist * math.cos(angle), sy, sz + dist * math.sin(angle))
+        state = lgsvl.AgentState()
+        state.transform = sim.map_point_on_lane(point)
+
+        if (trailerAvailable):
+            truck = sim.add_agent("MackAnthemStandupSleeperCab2018", lgsvl.AgentType.NPC, state)
+            truck.follow_closest_lane(True, 5.6)
+            trailer = sim.add_agent("TrailerTruckTest", lgsvl.AgentType.NPC, state)
+            trailer.set_behaviour("NPCTrailerBehaviour")
+            sim.remote.command("agent/trailer/attach", {"trailer_uid": trailer.uid, "truck_uid": truck.uid})
+
+        else:
+            try:
+                agentIndex = int(inp)
+                if len(agents) < agentIndex:
+                    print("index out of range")
+                    continue
+
+                agent = agents[agentIndex]["name"]
+                print("Selected {}".format(agent))
+                npc = sim.add_agent(agent, lgsvl.AgentType.NPC, state)
+
+                if drunkDriverAvailable:
+                    inp = input("make drunk driver? yN")
+                if (inp == "y" or inp == "Y"):
+                    npc.set_behaviour("NPCDrunkDriverBehaviour")
+                    npc.remote.command("agent/drunk/config", { "uid": npc.uid, "correctionMinTime":0.0, "correctionMaxTime":0.6, "steerDriftMin": 0.00, "steerDriftMax":0.09})
+
+                npc.follow_closest_lane(True, 5.6)
+                print("spawned agent {}, uid {}".format(agent, npc.uid))
+
+            except ValueError:
+                print("expected a number")    
 
 
 def ego_on_collision(counter,cone,a0,a1,contact):
@@ -66,7 +112,6 @@ sim.load("Reset")
 sim.load(args.environment)
 sim.reset()
 
-
 # signalの制御
 controllables = sim.get_controllables()
 for c in controllables:
@@ -108,8 +153,10 @@ def ego_hit_callback(a0,a1,contact):
     e0 = 0
     print(contact)
     if a1 is None:
+        print("Success")
         pass # success
     else:
+        print("Failure")
         e0 = 1
         pass # failure
     exit(e0)
