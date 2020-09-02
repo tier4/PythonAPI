@@ -69,9 +69,9 @@ if args.sim_addr != None:
         sim_port = int(sim_addr_port[1])
 
 br_addr = None
-br_port = 9191
+br_port = 9090
 if args.bridge != None:
-    br_addr_port = args.bridge_addr.split(':')
+    br_addr_port = args.bridge.split(':')
     br_addr = br_addr_port[0]
     if 1 < len(br_addr_port):
         br_port = int(br_addr_port[1])

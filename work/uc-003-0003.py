@@ -31,7 +31,7 @@ if args.sim_addr != None:
         sim_port = int(sim_addr_port[1])
 
 br_addr = None
-br_port = 9191
+br_port = 9090
 if args.bridge != None:
     br_addr_port = args.bridge.split(':')
     br_addr = br_addr_port[0]
@@ -53,20 +53,22 @@ else:
 
 
 # NPC Car設置
-
 npc = npc_gen(sim,"Sedan",lgsvl.Vector(-17,0,5.9),64)
 
 # counter coneの設置
 
-ccone = sim.controllable_add("CounterCone")
 controllables = sim.get_controllables()
-for c in controllables:
-    print("type: " + c.type)
-    print("state: " + str(c.transform))
 
-state = lgsvl.ObjectState()
-state.transform.position = lgsvl.Vector(-3.3,0,12.5)
-ccone.object_state = state
+cone_pos = [
+    lgsvl.Vector(-3.2,0,12.2),
+    lgsvl.Vector(-1.63,0,9.38),
+]
+
+for cp in cone_pos:
+    ccone = sim.controllable_add("CounterCone")
+    state = lgsvl.ObjectState()
+    state.transform.position = cp
+    ccone.object_state = state
 
 # egovehicle追加
 spawns = sim.get_spawn()
@@ -89,7 +91,6 @@ def ego_hitcallback(a0,a1,contact):
     exit(r0)
 
 
-# npc.on_collision()
 ego.on_collision(ego_hitcallback)
 
 # 適当にシミュレーション開始
